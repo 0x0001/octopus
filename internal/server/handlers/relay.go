@@ -12,6 +12,7 @@ import (
 func init() {
 	router.NewGroupRouter("/v1").
 		Use(middleware.APIKeyAuth()).
+		Use(middleware.SSECompress()).
 		AddRoute(
 			router.NewRoute("/chat/completions", http.MethodPost).
 				Handle(relay.Forward(llm.APIFormatOpenAIChatCompletion)),

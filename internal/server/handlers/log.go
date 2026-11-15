@@ -17,6 +17,7 @@ import (
 func init() {
 	router.NewGroupRouter("/api/v1/log").
 		Use(middleware.Auth()).
+		Use(middleware.SSECompress()). // overview/stream 是 SSE, 其余路由懒协商下零开销透传。
 		AddRoute(
 			router.NewRoute("/overview/stream", http.MethodGet).
 				Handle(streamOverview),

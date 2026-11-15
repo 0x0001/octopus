@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bestruirui/octopus/internal/compress"
 	"github.com/bestruirui/octopus/internal/model"
 	"github.com/bestruirui/octopus/internal/op"
 	"golang.org/x/net/proxy"
@@ -90,7 +91,8 @@ func Direct() (*http.Client, error) {
 	}
 	// 克隆自 http.DefaultTransport 会带上 ProxyFromEnvironment, 直连须显式清掉。
 	cloned.Proxy = nil
-	directClient = &http.Client{Transport: cloned}
+	// 压缩协商层包在代理拨号之外: 请求头注入与响应解压与代理方式无关。
+	directClient = &http.Client{Transport: compress.NewTransport(cloned)}
 	return directClient, nil
 }
 
@@ -135,5 +137,5 @@ func newCustomProxyClient(proxyURLStr string) (*http.Client, error) {
 		return nil, fmt.Errorf("unsupported proxy scheme: %s", proxyURL.Scheme)
 	}
 
-	return &http.Client{Transport: cloned}, nil
+	return &http.Client{Transport: compress.NewTransport(cloned)}, nil
 }

@@ -19,6 +19,7 @@ import (
 func init() {
 	router.NewGroupRouter("/api/v1/group").
 		Use(middleware.Auth()).
+		Use(middleware.SSECompress()). // events 是 SSE, 其余路由懒协商下零开销透传。
 		Use(middleware.RequireJSON()).
 		AddRoute(
 			router.NewRoute("/list", http.MethodGet).
