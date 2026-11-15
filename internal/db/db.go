@@ -3,14 +3,11 @@ package db
 import (
 	"fmt"
 	"net/url"
-	"strings"
 	"time"
 
 	"github.com/bestruirui/octopus/internal/db/migrate"
 	"github.com/bestruirui/octopus/internal/model"
 	"github.com/glebarez/sqlite"
-	"gorm.io/driver/mysql"
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -95,19 +92,6 @@ func initSQLite(path string, config *gorm.Config) (*gorm.DB, error) {
 	params.Add("_pragma", "mmap_size(268435456)")
 	params.Add("_pragma", "locking_mode(NORMAL)")
 	return gorm.Open(sqlite.Open(path+"?"+params.Encode()), config)
-}
-
-func initMySQL(dsn string, config *gorm.Config) (*gorm.DB, error) {
-	// DSN 格式: user:password@tcp(host:port)/dbname?charset=utf8mb4&parseTime=True&loc=Local
-	if !strings.Contains(dsn, "?") {
-		dsn += "?charset=utf8mb4&parseTime=True&loc=Local"
-	}
-	return gorm.Open(mysql.Open(dsn), config)
-}
-
-func initPostgres(dsn string, config *gorm.Config) (*gorm.DB, error) {
-	// DSN 格式: host=localhost user=postgres password=xxx dbname=octopus port=5432 sslmode=disable
-	return gorm.Open(postgres.Open(dsn), config)
 }
 
 func Close() error {
